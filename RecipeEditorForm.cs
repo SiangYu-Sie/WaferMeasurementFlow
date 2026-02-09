@@ -37,7 +37,7 @@ namespace WaferMeasurementFlow
             this.ForeColor = IndTheme.TextPrimary;
             this.Font = IndTheme.BodyFont;
             this.Size = new Size(800, 600);
-            this.Text = "Recipe Manager";
+            this.Text = "配方管理 (Recipe Manager)";
 
             var layout = new TableLayoutPanel
             {
@@ -52,7 +52,7 @@ namespace WaferMeasurementFlow
             this.Controls.Add(layout);
 
             // === Left: List ===
-            var secList = new SectionPanel { Title = "Recipe List", Dock = DockStyle.Fill, Margin = new Padding(0, 0, 10, 0) };
+            var secList = new SectionPanel { Title = "配方列表", Dock = DockStyle.Fill, Margin = new Padding(0, 0, 10, 0) };
             var pnlList = new Panel { Dock = DockStyle.Fill, Padding = new Padding(10, 40, 10, 10), BackColor = Color.Transparent };
             secList.Controls.Add(pnlList);
 
@@ -73,29 +73,29 @@ namespace WaferMeasurementFlow
             var rightPanel = new Panel { Dock = DockStyle.Fill };
             layout.Controls.Add(rightPanel, 1, 0);
 
-            var secDetails = new SectionPanel { Title = "Recipe Details", Dock = DockStyle.Fill };
+            var secDetails = new SectionPanel { Title = "配方詳細內容", Dock = DockStyle.Fill };
             var pnlDetails = new Panel { Dock = DockStyle.Fill, Padding = new Padding(15, 45, 15, 15), BackColor = Color.Transparent };
             secDetails.Controls.Add(pnlDetails);
             rightPanel.Controls.Add(secDetails);
 
             // ID
-            pnlDetails.Controls.Add(CreateLabel("Recipe ID:", 15, 50));
+            pnlDetails.Controls.Add(CreateLabel("配方 ID:", 15, 50));
             _recipeIdTextBox = CreateTextBox();
             _recipeIdTextBox.Location = new Point(100, 47);
             _recipeIdTextBox.Width = 200;
             pnlDetails.Controls.Add(_recipeIdTextBox);
 
             // Slots
-            pnlDetails.Controls.Add(CreateLabel("Target Slots:", 15, 85));
+            pnlDetails.Controls.Add(CreateLabel("目標 Slot:", 15, 85));
             _txtTargetSlots = CreateTextBox();
             _txtTargetSlots.Location = new Point(100, 82);
             _txtTargetSlots.Width = 200;
             pnlDetails.Controls.Add(_txtTargetSlots);
 
-            pnlDetails.Controls.Add(CreateLabel("(e.g., '1,2,5' or '1-5')", 310, 85));
+            pnlDetails.Controls.Add(CreateLabel("(例如: '1,2,5' 或 '1-5')", 310, 85));
 
             // Grid
-            pnlDetails.Controls.Add(CreateLabel("Parameters:", 15, 120));
+            pnlDetails.Controls.Add(CreateLabel("參數列表:", 15, 120));
             _parametersGridView = new DataGridView();
             SetupDataGridView(_parametersGridView);
             _parametersGridView.Location = new Point(15, 145);
@@ -105,20 +105,20 @@ namespace WaferMeasurementFlow
             _parametersGridView.AllowUserToResizeRows = false;
             _parametersGridView.ReadOnly = false;
 
-            _parametersGridView.Columns.Add("Key", "Parameter Name");
-            _parametersGridView.Columns.Add("Value", "Value");
+            _parametersGridView.Columns.Add("Key", "參數名稱");
+            _parametersGridView.Columns.Add("Value", "數值");
             pnlDetails.Controls.Add(_parametersGridView);
 
             // Buttons
-            _btnNew = new ActionButton("New", IndTheme.StatusGreen) { Location = new Point(15, 460), Anchor = AnchorStyles.Bottom | AnchorStyles.Left };
+            _btnNew = new ActionButton("新增", IndTheme.StatusGreen) { Location = new Point(15, 460), Anchor = AnchorStyles.Bottom | AnchorStyles.Left };
             _btnNew.Click += BtnNew_Click;
             pnlDetails.Controls.Add(_btnNew);
 
-            _btnSave = new ActionButton("Save", IndTheme.StatusBlue) { Location = new Point(125, 460), Anchor = AnchorStyles.Bottom | AnchorStyles.Left };
+            _btnSave = new ActionButton("儲存", IndTheme.StatusBlue) { Location = new Point(125, 460), Anchor = AnchorStyles.Bottom | AnchorStyles.Left };
             _btnSave.Click += BtnSave_Click;
             pnlDetails.Controls.Add(_btnSave);
 
-            _btnDelete = new ActionButton("Delete", IndTheme.StatusRed) { Location = new Point(235, 460), Anchor = AnchorStyles.Bottom | AnchorStyles.Left };
+            _btnDelete = new ActionButton("刪除", IndTheme.StatusRed) { Location = new Point(235, 460), Anchor = AnchorStyles.Bottom | AnchorStyles.Left };
             _btnDelete.Click += BtnDelete_Click;
             pnlDetails.Controls.Add(_btnDelete);
         }

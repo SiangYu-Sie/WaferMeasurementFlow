@@ -28,7 +28,7 @@ namespace WaferMeasurementFlow
             _equipment = equipment;
 
             BuildUI();
-            
+
             LoadAvailableLoadPorts();
             LoadRecipes();
         }
@@ -40,7 +40,7 @@ namespace WaferMeasurementFlow
             this.ForeColor = IndTheme.TextPrimary;
             this.Font = IndTheme.BodyFont;
             this.Size = new Size(900, 600);
-            this.Text = "Create Control Job (PJCJ)";
+            this.Text = "建立控制工單 (Create Control Job)";
 
             // Layout
             var layout = new TableLayoutPanel
@@ -56,12 +56,12 @@ namespace WaferMeasurementFlow
             this.Controls.Add(layout);
 
             // === Left Panel: Settings ===
-            var secSettings = new SectionPanel { Title = "Job Settings", Dock = DockStyle.Fill, Margin = new Padding(0, 0, 10, 0) };
+            var secSettings = new SectionPanel { Title = "工單設定", Dock = DockStyle.Fill, Margin = new Padding(0, 0, 10, 0) };
             var pnlSettings = new Panel { Dock = DockStyle.Fill, Padding = new Padding(15, 45, 15, 15), BackColor = Color.Transparent };
             secSettings.Controls.Add(pnlSettings);
-            
+
             // Recipe
-            pnlSettings.Controls.Add(CreateLabel("Select Recipe:", 15, 50));
+            pnlSettings.Controls.Add(CreateLabel("選擇配方 (Recipe):", 15, 50));
             _comboRecipes = CreateComboBox();
             _comboRecipes.Location = new Point(15, 75);
             _comboRecipes.Width = 300;
@@ -69,7 +69,7 @@ namespace WaferMeasurementFlow
             pnlSettings.Controls.Add(_comboRecipes);
 
             // Load Port
-            pnlSettings.Controls.Add(CreateLabel("Select Load Port:", 15, 115));
+            pnlSettings.Controls.Add(CreateLabel("選擇裝載埠 (Load Port):", 15, 115));
             _comboPorts = CreateComboBox();
             _comboPorts.Location = new Point(15, 140);
             _comboPorts.Width = 300;
@@ -90,28 +90,28 @@ namespace WaferMeasurementFlow
             pnlSettings.Controls.Add(_txtCJCJId);
 
             // Create Button
-            _btnCreate = new ActionButton("Create & Start", IndTheme.StatusBlue) { Location = new Point(15, 330), Width = 300, Height = 45 };
+            _btnCreate = new ActionButton("建立並執行工單", IndTheme.StatusBlue) { Location = new Point(15, 330), Width = 300, Height = 45 };
             _btnCreate.Click += BtnCreateAndStartJob_Click;
             pnlSettings.Controls.Add(_btnCreate);
 
             layout.Controls.Add(secSettings, 0, 0);
 
             // === Right Panel: Wafers ===
-            var secWafers = new SectionPanel { Title = "Wafer Selection", Dock = DockStyle.Fill };
+            var secWafers = new SectionPanel { Title = "晶圓選取", Dock = DockStyle.Fill };
             var pnlWafers = new Panel { Dock = DockStyle.Fill, Padding = new Padding(10, 40, 10, 10), BackColor = Color.Transparent };
             secWafers.Controls.Add(pnlWafers);
 
             _gridWafers = new DataGridView();
             SetupDataGridView(_gridWafers);
-            
+
             // Add CheckBox Column
-            var chkCol = new DataGridViewCheckBoxColumn { Name = "Select", HeaderText = "Sel", Width = 40 };
+            var chkCol = new DataGridViewCheckBoxColumn { Name = "Select", HeaderText = "選取", Width = 40 };
             _gridWafers.Columns.Add(chkCol);
             _gridWafers.Columns.Add("Slot", "Slot");
             _gridWafers.Columns.Add("ID", "Wafer ID");
             _gridWafers.Columns["Slot"].ReadOnly = true;
             _gridWafers.Columns["ID"].ReadOnly = true;
-            
+
             pnlWafers.Controls.Add(_gridWafers);
             layout.Controls.Add(secWafers, 1, 0);
         }
@@ -162,7 +162,7 @@ namespace WaferMeasurementFlow
             }
         }
 
-         private void RecipeComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void RecipeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateWafersToProcessList();
         }
@@ -244,7 +244,7 @@ namespace WaferMeasurementFlow
             // Validation
             if (_comboPorts.SelectedItem == null)
             {
-                MessageBox.Show("請選擇一個 Load Port。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("請選擇一個裝載埠 (Load Port)。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 _btnCreate.Enabled = true;
                 return;
             }
@@ -263,7 +263,7 @@ namespace WaferMeasurementFlow
 
             if (!(_comboPorts.SelectedItem is int selectedPortId))
             {
-                MessageBox.Show("請選擇一個 Load Port。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("請選擇一個裝載埠 (Load Port)。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 _btnCreate.Enabled = true;
                 return;
             }
@@ -284,7 +284,7 @@ namespace WaferMeasurementFlow
 
             if (!selectedWafers.Any())
             {
-                MessageBox.Show("請至少選擇一個 Wafer 進行處理。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("請至少選擇一個晶圓 (Wafer) 進行處理。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 _btnCreate.Enabled = true;
                 return;
             }
@@ -292,7 +292,7 @@ namespace WaferMeasurementFlow
             string recipeId = _comboRecipes.SelectedItem?.ToString() ?? "";
             if (string.IsNullOrEmpty(recipeId))
             {
-                MessageBox.Show("請選擇 Recipe。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("請選擇配方 (Recipe)。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 _btnCreate.Enabled = true;
                 return;
             }
@@ -308,11 +308,11 @@ namespace WaferMeasurementFlow
                 new List<ProcessJob> { processJob },
                 targetPort.Carrier!);
 
-            MessageBox.Show($"Control Job '{controlJob.Id}' Created & Queued. Starting Execution...", "訊息", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show($"工單 '{controlJob.Id}' 已建立並排程。開始執行...", "訊息", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             await _equipment.ControlJobManager.ExecuteControlJob(controlJob);
 
-            MessageBox.Show($"Control Job '{controlJob.Id}' 已完成。", "訊息", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show($"工單 '{controlJob.Id}' 已完成。", "訊息", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             this.Close();
         }

@@ -43,6 +43,7 @@ namespace WaferMeasurementFlow.Forms
             this.ForeColor = IndTheme.TextPrimary;
             this.Font = IndTheme.BodyFont;
             this.Size = new Size(600, 700);
+            this.Text = "ETEL 驅動測試程式 (ETEL Driver Test)";
 
             // Container
             var mainContainer = new Panel { Dock = DockStyle.Fill, Padding = new Padding(20) };
@@ -62,7 +63,7 @@ namespace WaferMeasurementFlow.Forms
             mainContainer.Controls.Add(layout);
 
             // 1. Connection Section
-            var secConn = new SectionPanel { Title = "連線設定", Dock = DockStyle.Fill, Margin = new Padding(0, 0, 0, 10) };
+            var secConn = new SectionPanel { Title = "連線設定 (Connection)", Dock = DockStyle.Fill, Margin = new Padding(0, 0, 0, 10) };
             var pnlConn = new Panel { Dock = DockStyle.Fill, Padding = new Padding(15, 45, 15, 15), BackColor = Color.Transparent };
             secConn.Controls.Add(pnlConn);
 
@@ -73,12 +74,12 @@ namespace WaferMeasurementFlow.Forms
             txtUrl.Width = 250;
             pnlConn.Controls.Add(txtUrl);
 
-            btnConnect = new ActionButton("連線", IndTheme.StatusBlue);
+            btnConnect = new ActionButton("連線 (Connect)", IndTheme.StatusBlue);
             btnConnect.Location = new Point(320, 45);
             btnConnect.Click += btnConnect_Click;
             pnlConn.Controls.Add(btnConnect);
 
-            btnDisconnect = new ActionButton("斷線", IndTheme.StatusRed);
+            btnDisconnect = new ActionButton("斷線 (Disconnect)", IndTheme.StatusRed);
             btnDisconnect.Location = new Point(430, 45);
             btnDisconnect.Click += btnDisconnect_Click;
             pnlConn.Controls.Add(btnDisconnect);
@@ -86,12 +87,12 @@ namespace WaferMeasurementFlow.Forms
             layout.Controls.Add(secConn, 0, 0);
 
             // 2. Read/Write Section
-            var secCmd = new SectionPanel { Title = "參數讀寫", Dock = DockStyle.Fill, Margin = new Padding(0, 0, 0, 10) };
+            var secCmd = new SectionPanel { Title = "參數讀寫 (Read/Write)", Dock = DockStyle.Fill, Margin = new Padding(0, 0, 0, 10) };
             var pnlCmd = new Panel { Dock = DockStyle.Fill, Padding = new Padding(15, 45, 15, 15), BackColor = Color.Transparent };
             secCmd.Controls.Add(pnlCmd);
 
             int row1Y = 50;
-            pnlCmd.Controls.Add(SetLoc(CreateLabel("Type:"), 15, row1Y + 3));
+            pnlCmd.Controls.Add(SetLoc(CreateLabel("類型 (Type):"), 15, row1Y + 3));
 
             comboType = new ComboBox
             {
@@ -103,33 +104,33 @@ namespace WaferMeasurementFlow.Forms
             };
             comboType.Items.AddRange(new object[] { "K", "M", "X", "Y", "L" });
             comboType.Text = "K";
-            comboType.Location = new Point(55, row1Y);
+            comboType.Location = new Point(90, row1Y);
             pnlCmd.Controls.Add(comboType);
 
-            pnlCmd.Controls.Add(SetLoc(CreateLabel("Idx:"), 120, row1Y + 3));
+            pnlCmd.Controls.Add(SetLoc(CreateLabel("索引 (Idx):"), 150, row1Y + 3));
             txtIndex = CreateTextBox("0");
-            txtIndex.Location = new Point(150, row1Y);
+            txtIndex.Location = new Point(220, row1Y);
             txtIndex.Width = 50;
             pnlCmd.Controls.Add(txtIndex);
 
-            pnlCmd.Controls.Add(SetLoc(CreateLabel("Sub:"), 210, row1Y + 3));
+            pnlCmd.Controls.Add(SetLoc(CreateLabel("子索引 (Sub):"), 280, row1Y + 3));
             txtSubIndex = CreateTextBox("0");
-            txtSubIndex.Location = new Point(245, row1Y);
+            txtSubIndex.Location = new Point(360, row1Y);
             txtSubIndex.Width = 50;
             pnlCmd.Controls.Add(txtSubIndex);
 
-            pnlCmd.Controls.Add(SetLoc(CreateLabel("Val:"), 310, row1Y + 3));
+            pnlCmd.Controls.Add(SetLoc(CreateLabel("數值 (Val):"), 420, row1Y + 3));
             txtValue = CreateTextBox("");
-            txtValue.Location = new Point(345, row1Y);
-            txtValue.Width = 100;
+            txtValue.Location = new Point(490, row1Y);
+            txtValue.Width = 80;
             pnlCmd.Controls.Add(txtValue);
 
-            btnRead = new ActionButton("讀取", IndTheme.StatusGreen);
+            btnRead = new ActionButton("讀取 (Read)", IndTheme.StatusGreen);
             btnRead.Location = new Point(15, 95);
             btnRead.Click += btnRead_Click;
             pnlCmd.Controls.Add(btnRead);
 
-            btnWrite = new ActionButton("寫入", IndTheme.StatusYellow);
+            btnWrite = new ActionButton("寫入 (Write)", IndTheme.StatusYellow);
             btnWrite.Location = new Point(125, 95);
             btnWrite.Click += btnWrite_Click;
             pnlCmd.Controls.Add(btnWrite);
@@ -137,7 +138,7 @@ namespace WaferMeasurementFlow.Forms
             layout.Controls.Add(secCmd, 0, 1);
 
             // 3. Log Section
-            var secLog = new SectionPanel { Title = "系統日誌", Dock = DockStyle.Fill };
+            var secLog = new SectionPanel { Title = "系統日誌 (System Log)", Dock = DockStyle.Fill };
             var pnlLog = new Panel { Dock = DockStyle.Fill, Padding = new Padding(10, 40, 10, 10), BackColor = Color.Transparent };
             secLog.Controls.Add(pnlLog);
 
@@ -189,7 +190,7 @@ namespace WaferMeasurementFlow.Forms
             }
             catch (Exception ex)
             {
-                Log($"Connection Exception: {ex.Message}");
+                Log($"連線異常: {ex.Message}");
             }
         }
 
@@ -244,7 +245,7 @@ namespace WaferMeasurementFlow.Forms
 
                 if (!int.TryParse(txtIndex.Text, out int index))
                 {
-                    LogError("Invalid Index");
+                    LogError("無效索引 (Invalid Index)");
                     return;
                 }
 
@@ -253,11 +254,11 @@ namespace WaferMeasurementFlow.Forms
 
                 long value = _etelManager.ReadParameter(type, index, subIndex);
                 txtValue.Text = value.ToString();
-                Log($"Read Result: {value}");
+                Log($"讀取結果: {value}");
             }
             catch (Exception ex)
             {
-                LogError($"Read Failed: {ex.Message}");
+                LogError($"讀取失敗: {ex.Message}");
             }
         }
 
@@ -268,23 +269,23 @@ namespace WaferMeasurementFlow.Forms
                 string type = comboType.Text;
                 if (!int.TryParse(txtIndex.Text, out int index))
                 {
-                    LogError("Invalid Index");
+                    LogError("無效索引 (Invalid Index)");
                     return;
                 }
                 if (!int.TryParse(txtSubIndex.Text, out int subIndex)) subIndex = 0;
 
                 if (!long.TryParse(txtValue.Text, out long value))
                 {
-                    LogError("Invalid Value");
+                    LogError("無效數值 (Invalid Value)");
                     return;
                 }
 
                 _etelManager.WriteParameter(type, index, subIndex, value);
-                Log("Write Command Sent");
+                Log("寫入指令已發送");
             }
             catch (Exception ex)
             {
-                LogError($"Write Failed: {ex.Message}");
+                LogError($"寫入失敗: {ex.Message}");
             }
         }
     }

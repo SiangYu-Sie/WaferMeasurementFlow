@@ -52,7 +52,7 @@ namespace WaferMeasurementFlow
             this.ForeColor = IndTheme.TextPrimary;
             this.Font = IndTheme.BodyFont;
             this.Size = new Size(1280, 800);
-            this.Text = "Wafer Measurement Flow System";
+            this.Text = "晶圓量測流程系統 (Wafer Measurement Flow System)";
 
             // Main Layout (2 Columns)
             var layout = new TableLayoutPanel
@@ -82,7 +82,7 @@ namespace WaferMeasurementFlow
             leftPanel.Controls.Add(leftLayout);
 
             // 1. Port Status Section
-            var secPorts = new SectionPanel { Title = "Load Port Status", Dock = DockStyle.Fill, Margin = new Padding(0, 0, 0, 10) };
+            var secPorts = new SectionPanel { Title = "裝載埠狀態 (Load Port Status)", Dock = DockStyle.Fill, Margin = new Padding(0, 0, 0, 10) };
             var pnlPorts = new Panel { Dock = DockStyle.Fill, Padding = new Padding(15, 45, 15, 15), BackColor = Color.Transparent };
             secPorts.Controls.Add(pnlPorts);
 
@@ -91,15 +91,15 @@ namespace WaferMeasurementFlow
             gridPorts.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             pnlPorts.Controls.Add(gridPorts);
 
-            _indPort1 = new StatusIndicator("Load Port 1", "Unknown", IndTheme.StatusGray) { Dock = DockStyle.Fill, Margin = new Padding(0, 0, 0, 5) };
-            _indPort2 = new StatusIndicator("Load Port 2", "Unknown", IndTheme.StatusGray) { Dock = DockStyle.Fill, Margin = new Padding(0, 5, 0, 0) };
+            _indPort1 = new StatusIndicator("Load Port 1", "未知", IndTheme.StatusGray) { Dock = DockStyle.Fill, Margin = new Padding(0, 0, 0, 5) };
+            _indPort2 = new StatusIndicator("Load Port 2", "未知", IndTheme.StatusGray) { Dock = DockStyle.Fill, Margin = new Padding(0, 5, 0, 0) };
 
             gridPorts.Controls.Add(_indPort1, 0, 0);
             gridPorts.Controls.Add(_indPort2, 0, 1);
 
             _lblCarrierId = new Label
             {
-                Text = "Active Carrier: -",
+                Text = "當前載具: -",
                 AutoSize = true,
                 ForeColor = IndTheme.TextSecondary,
                 Location = new Point(200, 15), // Top right of header
@@ -109,7 +109,7 @@ namespace WaferMeasurementFlow
             leftLayout.Controls.Add(secPorts, 0, 0);
 
             // 2. Operations Section
-            var secOps = new SectionPanel { Title = "System Operations", Dock = DockStyle.Fill };
+            var secOps = new SectionPanel { Title = "系統操作 (System Operations)", Dock = DockStyle.Fill };
             var pnlOps = new Panel { Dock = DockStyle.Fill, Padding = new Padding(15, 45, 15, 15), BackColor = Color.Transparent };
             secOps.Controls.Add(pnlOps);
 
@@ -117,7 +117,7 @@ namespace WaferMeasurementFlow
             pnlOps.Controls.Add(flowOps);
 
             // Active Port Selection
-            var lblPortParams = new Label { Text = "Target Port Control:", AutoSize = true, ForeColor = IndTheme.TextMuted, Margin = new Padding(3, 0, 3, 5) };
+            var lblPortParams = new Label { Text = "目標裝載埠 (Target Port):", AutoSize = true, ForeColor = IndTheme.TextMuted, Margin = new Padding(3, 0, 3, 5) };
             flowOps.Controls.Add(lblPortParams);
 
             _comboPort = new ComboBox
@@ -134,24 +134,24 @@ namespace WaferMeasurementFlow
             _comboPort.SelectedIndexChanged += (s, e) => { UpdateUI(); };
             flowOps.Controls.Add(_comboPort);
 
-            _btnPlace = CreateBtn("Place Carrier", IndTheme.StatusGreen, BtnPlaceCarrier_Click);
+            _btnPlace = CreateBtn("放置載具 (Place Carrier)", IndTheme.StatusGreen, BtnPlaceCarrier_Click);
             flowOps.Controls.Add(_btnPlace);
 
-            _btnUnload = CreateBtn("Unload Carrier", IndTheme.StatusYellow, UnloadCarrier_Click);
+            _btnUnload = CreateBtn("卸載載具 (Unload Carrier)", IndTheme.StatusYellow, UnloadCarrier_Click);
             flowOps.Controls.Add(_btnUnload);
 
-            _btnPJCJ = CreateBtn("Create New Job", IndTheme.StatusBlue, BtnCreatePJCJ_Click);
+            _btnPJCJ = CreateBtn("建立工單 (Create Job)", IndTheme.StatusBlue, BtnCreatePJCJ_Click);
             _btnPJCJ.Margin = new Padding(3, 20, 3, 3); // Spacer
             flowOps.Controls.Add(_btnPJCJ);
 
-            _btnRecipes = CreateBtn("Manage Recipes", IndTheme.StatusBlue, BtnManageRecipes_Click);
+            _btnRecipes = CreateBtn("配方管理 (Recipes)", IndTheme.StatusBlue, BtnManageRecipes_Click);
             flowOps.Controls.Add(_btnRecipes);
 
-            _btnSecs = CreateBtn("SECS Monitor", IndTheme.StatusBlue, BtnSecsMonitor_Click);
+            _btnSecs = CreateBtn("SECS 監控 (SECS Monitor)", IndTheme.StatusBlue, BtnSecsMonitor_Click);
             _btnSecs.Margin = new Padding(3, 20, 3, 3);
             flowOps.Controls.Add(_btnSecs);
 
-            _btnEtel = CreateBtn("ETEL Driver Test", IndTheme.StatusGray, BtnEtelTest_Click);
+            _btnEtel = CreateBtn("ETEL 驅動測試", IndTheme.StatusGray, BtnEtelTest_Click);
             flowOps.Controls.Add(_btnEtel);
 
             leftLayout.Controls.Add(secOps, 0, 1);
@@ -172,7 +172,7 @@ namespace WaferMeasurementFlow
             rightPanel.Controls.Add(rightLayout);
 
             // 3. Slot Map Section
-            var secMap = new SectionPanel { Title = "Wafer Slot Map", Dock = DockStyle.Fill, Margin = new Padding(0, 0, 0, 10) };
+            var secMap = new SectionPanel { Title = "晶圓狀態圖 (Wafer Slot Map)", Dock = DockStyle.Fill, Margin = new Padding(0, 0, 0, 10) };
             var pnlMap = new Panel { Dock = DockStyle.Fill, Padding = new Padding(15, 45, 15, 15), BackColor = Color.Transparent };
             secMap.Controls.Add(pnlMap);
 
@@ -180,14 +180,14 @@ namespace WaferMeasurementFlow
             SetupDataGridView(_gridSlots);
             _gridSlots.Columns.Add("Slot", "Slot");
             _gridSlots.Columns.Add("ID", "Wafer ID");
-            _gridSlots.Columns.Add("State", "Status");
+            _gridSlots.Columns.Add("State", "狀態");
             _gridSlots.Columns[0].Width = 60;
             pnlMap.Controls.Add(_gridSlots);
 
             rightLayout.Controls.Add(secMap, 0, 0);
 
             // 4. Log Section
-            var secLog = new SectionPanel { Title = "System Log", Dock = DockStyle.Fill };
+            var secLog = new SectionPanel { Title = "系統日誌 (System Log)", Dock = DockStyle.Fill };
             var pnlLog = new Panel { Dock = DockStyle.Fill, Padding = new Padding(10, 40, 10, 10), BackColor = Color.Transparent };
             secLog.Controls.Add(pnlLog);
 
@@ -288,9 +288,9 @@ namespace WaferMeasurementFlow
 
             // Carrier ID Display
             if (targetPort.Carrier != null)
-                _lblCarrierId.Text = $"Active Carrier: {targetPort.Carrier.Id}";
+                _lblCarrierId.Text = $"當前載具: {targetPort.Carrier.Id}";
             else
-                _lblCarrierId.Text = "Active Carrier: None";
+                _lblCarrierId.Text = "當前載具: 無";
 
             UpdateSlotMapDisplay();
         }
