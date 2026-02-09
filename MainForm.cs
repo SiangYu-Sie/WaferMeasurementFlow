@@ -134,20 +134,20 @@ namespace WaferMeasurementFlow
             _comboPort.SelectedIndexChanged += (s, e) => { UpdateUI(); };
             flowOps.Controls.Add(_comboPort);
 
-            _btnPlace = CreateBtn("放置載具 (Place Carrier)", IndTheme.StatusGreen, BtnPlaceCarrier_Click);
+            _btnPlace = CreateBtn("放置載具", IndTheme.StatusGreen, BtnPlaceCarrier_Click);
             flowOps.Controls.Add(_btnPlace);
 
-            _btnUnload = CreateBtn("卸載載具 (Unload Carrier)", IndTheme.StatusYellow, UnloadCarrier_Click);
+            _btnUnload = CreateBtn("卸載載具", IndTheme.StatusYellow, UnloadCarrier_Click);
             flowOps.Controls.Add(_btnUnload);
 
-            _btnPJCJ = CreateBtn("建立工單 (Create Job)", IndTheme.StatusBlue, BtnCreatePJCJ_Click);
+            _btnPJCJ = CreateBtn("建立工單", IndTheme.StatusBlue, BtnCreatePJCJ_Click);
             _btnPJCJ.Margin = new Padding(3, 20, 3, 3); // Spacer
             flowOps.Controls.Add(_btnPJCJ);
 
-            _btnRecipes = CreateBtn("配方管理 (Recipes)", IndTheme.StatusBlue, BtnManageRecipes_Click);
+            _btnRecipes = CreateBtn("配方管理", IndTheme.StatusBlue, BtnManageRecipes_Click);
             flowOps.Controls.Add(_btnRecipes);
 
-            _btnSecs = CreateBtn("SECS 監控 (SECS Monitor)", IndTheme.StatusBlue, BtnSecsMonitor_Click);
+            _btnSecs = CreateBtn("SECS 監控", IndTheme.StatusBlue, BtnSecsMonitor_Click);
             _btnSecs.Margin = new Padding(3, 20, 3, 3);
             flowOps.Controls.Add(_btnSecs);
 
@@ -207,7 +207,7 @@ namespace WaferMeasurementFlow
 
         private ActionButton CreateBtn(string text, Color color, EventHandler handler)
         {
-            var btn = new ActionButton(text, color) { Width = 200, Margin = new Padding(3, 3, 3, 8) };
+            var btn = new ActionButton(text, color) { Width = 180, Height = 45, Margin = new Padding(3, 3, 3, 8) };
             btn.Click += handler;
             return btn;
         }

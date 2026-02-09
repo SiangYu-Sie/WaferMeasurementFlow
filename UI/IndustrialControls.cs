@@ -74,9 +74,10 @@ namespace WaferMeasurementFlow.UI
         {
             Text = text;
             _accentColor = accent;
-            Size = new Size(100, 38);
+            Size = new Size(130, 40);
             DoubleBuffered = true;
             Cursor = Cursors.Hand;
+            Font = new Font("Microsoft JhengHei UI", 10F, FontStyle.Bold);
         }
 
         protected override void OnMouseEnter(EventArgs e) { _hovering = true; Invalidate(); base.OnMouseEnter(e); }
@@ -97,7 +98,7 @@ namespace WaferMeasurementFlow.UI
                 g.DrawRectangle(pen, 1, 1, Width - 3, Height - 3);
 
             var textSize = TextRenderer.MeasureText(Text, Font);
-            TextRenderer.DrawText(g, Text, new Font("Segoe UI", 9F, FontStyle.Bold),
+            TextRenderer.DrawText(g, Text, Font,
                 new Point((Width - textSize.Width) / 2, (Height - textSize.Height) / 2), fg);
         }
     }

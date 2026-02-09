@@ -42,8 +42,9 @@ namespace WaferMeasurementFlow.Forms
             this.BackColor = IndTheme.BgPrimary;
             this.ForeColor = IndTheme.TextPrimary;
             this.Font = IndTheme.BodyFont;
-            this.Size = new Size(600, 700);
-            this.Text = "ETEL 驅動測試程式 (ETEL Driver Test)";
+            this.Size = new Size(700, 750);
+            this.Text = "ETEL 驅動測試程式";
+            this.StartPosition = FormStartPosition.CenterScreen;
 
             // Container
             var mainContainer = new Panel { Dock = DockStyle.Fill, Padding = new Padding(20) };
@@ -57,88 +58,118 @@ namespace WaferMeasurementFlow.Forms
                 ColumnCount = 1,
                 Padding = new Padding(0)
             };
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 130F)); // Connection
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 160F)); // RW
-            layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); // Log
+            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 140F)); // Connection
+            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 200F)); // RW
+            layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));  // Log
             mainContainer.Controls.Add(layout);
 
+            // ========================================
             // 1. Connection Section
-            var secConn = new SectionPanel { Title = "連線設定 (Connection)", Dock = DockStyle.Fill, Margin = new Padding(0, 0, 0, 10) };
+            // ========================================
+            var secConn = new SectionPanel { Title = "連線設定", Dock = DockStyle.Fill, Margin = new Padding(0, 0, 0, 10) };
             var pnlConn = new Panel { Dock = DockStyle.Fill, Padding = new Padding(15, 45, 15, 15), BackColor = Color.Transparent };
             secConn.Controls.Add(pnlConn);
 
-            pnlConn.Controls.Add(SetLoc(CreateLabel("URL:"), 15, 55));
+            // URL Row
+            var lblUrl = CreateLabel("連線 URL:");
+            lblUrl.Location = new Point(15, 55);
+            pnlConn.Controls.Add(lblUrl);
 
             txtUrl = CreateTextBox("etcom://ETEL1/drive1");
-            txtUrl.Location = new Point(55, 52);
-            txtUrl.Width = 250;
+            txtUrl.Location = new Point(90, 52);
+            txtUrl.Width = 300;
             pnlConn.Controls.Add(txtUrl);
 
-            btnConnect = new ActionButton("連線 (Connect)", IndTheme.StatusBlue);
-            btnConnect.Location = new Point(320, 45);
+            // Buttons Row
+            btnConnect = new ActionButton("連線", IndTheme.StatusBlue) { Width = 120, Height = 35 };
+            btnConnect.Location = new Point(410, 48);
             btnConnect.Click += btnConnect_Click;
             pnlConn.Controls.Add(btnConnect);
 
-            btnDisconnect = new ActionButton("斷線 (Disconnect)", IndTheme.StatusRed);
-            btnDisconnect.Location = new Point(430, 45);
+            btnDisconnect = new ActionButton("斷線", IndTheme.StatusRed) { Width = 120, Height = 35 };
+            btnDisconnect.Location = new Point(540, 48);
             btnDisconnect.Click += btnDisconnect_Click;
             pnlConn.Controls.Add(btnDisconnect);
 
             layout.Controls.Add(secConn, 0, 0);
 
+            // ========================================
             // 2. Read/Write Section
-            var secCmd = new SectionPanel { Title = "參數讀寫 (Read/Write)", Dock = DockStyle.Fill, Margin = new Padding(0, 0, 0, 10) };
+            // ========================================
+            var secCmd = new SectionPanel { Title = "參數讀寫", Dock = DockStyle.Fill, Margin = new Padding(0, 0, 0, 10) };
             var pnlCmd = new Panel { Dock = DockStyle.Fill, Padding = new Padding(15, 45, 15, 15), BackColor = Color.Transparent };
             secCmd.Controls.Add(pnlCmd);
 
-            int row1Y = 50;
-            pnlCmd.Controls.Add(SetLoc(CreateLabel("類型 (Type):"), 15, row1Y + 3));
+            // Row 1: Type, Index, SubIndex
+            int row1Y = 55;
+
+            var lblType = CreateLabel("類型:");
+            lblType.Location = new Point(15, row1Y);
+            pnlCmd.Controls.Add(lblType);
 
             comboType = new ComboBox
             {
                 BackColor = IndTheme.BgCard,
                 ForeColor = IndTheme.TextPrimary,
                 FlatStyle = FlatStyle.Flat,
-                Width = 50,
-                DropDownStyle = ComboBoxStyle.DropDownList
+                Width = 70,
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Font = IndTheme.BodyFont
             };
             comboType.Items.AddRange(new object[] { "K", "M", "X", "Y", "L" });
-            comboType.Text = "K";
-            comboType.Location = new Point(90, row1Y);
+            comboType.SelectedIndex = 0;
+            comboType.Location = new Point(60, row1Y - 3);
             pnlCmd.Controls.Add(comboType);
 
-            pnlCmd.Controls.Add(SetLoc(CreateLabel("索引 (Idx):"), 150, row1Y + 3));
+            var lblIndex = CreateLabel("索引:");
+            lblIndex.Location = new Point(150, row1Y);
+            pnlCmd.Controls.Add(lblIndex);
+
             txtIndex = CreateTextBox("0");
-            txtIndex.Location = new Point(220, row1Y);
-            txtIndex.Width = 50;
+            txtIndex.Location = new Point(195, row1Y - 3);
+            txtIndex.Width = 80;
             pnlCmd.Controls.Add(txtIndex);
 
-            pnlCmd.Controls.Add(SetLoc(CreateLabel("子索引 (Sub):"), 280, row1Y + 3));
+            var lblSubIndex = CreateLabel("子索引:");
+            lblSubIndex.Location = new Point(295, row1Y);
+            pnlCmd.Controls.Add(lblSubIndex);
+
             txtSubIndex = CreateTextBox("0");
-            txtSubIndex.Location = new Point(360, row1Y);
-            txtSubIndex.Width = 50;
+            txtSubIndex.Location = new Point(355, row1Y - 3);
+            txtSubIndex.Width = 80;
             pnlCmd.Controls.Add(txtSubIndex);
 
-            pnlCmd.Controls.Add(SetLoc(CreateLabel("數值 (Val):"), 420, row1Y + 3));
+            // Row 2: Value
+            int row2Y = 95;
+
+            var lblValue = CreateLabel("數值:");
+            lblValue.Location = new Point(15, row2Y);
+            pnlCmd.Controls.Add(lblValue);
+
             txtValue = CreateTextBox("");
-            txtValue.Location = new Point(490, row1Y);
-            txtValue.Width = 80;
+            txtValue.Location = new Point(60, row2Y - 3);
+            txtValue.Width = 200;
             pnlCmd.Controls.Add(txtValue);
 
-            btnRead = new ActionButton("讀取 (Read)", IndTheme.StatusGreen);
-            btnRead.Location = new Point(15, 95);
+            // Row 3: Buttons
+            int row3Y = 135;
+
+            btnRead = new ActionButton("讀取參數", IndTheme.StatusGreen) { Width = 140, Height = 38 };
+            btnRead.Location = new Point(15, row3Y);
             btnRead.Click += btnRead_Click;
             pnlCmd.Controls.Add(btnRead);
 
-            btnWrite = new ActionButton("寫入 (Write)", IndTheme.StatusYellow);
-            btnWrite.Location = new Point(125, 95);
+            btnWrite = new ActionButton("寫入參數", IndTheme.StatusYellow) { Width = 140, Height = 38 };
+            btnWrite.Location = new Point(170, row3Y);
             btnWrite.Click += btnWrite_Click;
             pnlCmd.Controls.Add(btnWrite);
 
             layout.Controls.Add(secCmd, 0, 1);
 
+            // ========================================
             // 3. Log Section
-            var secLog = new SectionPanel { Title = "系統日誌 (System Log)", Dock = DockStyle.Fill };
+            // ========================================
+            var secLog = new SectionPanel { Title = "系統日誌", Dock = DockStyle.Fill };
             var pnlLog = new Panel { Dock = DockStyle.Fill, Padding = new Padding(10, 40, 10, 10), BackColor = Color.Transparent };
             secLog.Controls.Add(pnlLog);
 
@@ -155,8 +186,6 @@ namespace WaferMeasurementFlow.Forms
 
             layout.Controls.Add(secLog, 0, 2);
         }
-
-        private Control SetLoc(Control c, int x, int y) { c.Location = new Point(x, y); return c; }
 
         private Label CreateLabel(string text)
         {
@@ -245,7 +274,7 @@ namespace WaferMeasurementFlow.Forms
 
                 if (!int.TryParse(txtIndex.Text, out int index))
                 {
-                    LogError("無效索引 (Invalid Index)");
+                    LogError("無效索引");
                     return;
                 }
 
@@ -269,14 +298,14 @@ namespace WaferMeasurementFlow.Forms
                 string type = comboType.Text;
                 if (!int.TryParse(txtIndex.Text, out int index))
                 {
-                    LogError("無效索引 (Invalid Index)");
+                    LogError("無效索引");
                     return;
                 }
                 if (!int.TryParse(txtSubIndex.Text, out int subIndex)) subIndex = 0;
 
                 if (!long.TryParse(txtValue.Text, out long value))
                 {
-                    LogError("無效數值 (Invalid Value)");
+                    LogError("無效數值");
                     return;
                 }
 
