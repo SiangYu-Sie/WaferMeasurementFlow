@@ -206,5 +206,11 @@ namespace WaferMeasurementFlow
         {
             _equipment.SecsManager.ShowMonitor();
         }
+
+        private void BtnEtelTest_Click(object sender, EventArgs e)
+        {
+            var form = new WaferMeasurementFlow.Forms.EtelTestForm();
+            form.Show();
+        }
     }
 }

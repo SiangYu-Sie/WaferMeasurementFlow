@@ -163,7 +163,17 @@ namespace WaferMeasurementFlow
             this._btnSecsMonitor.Location = new System.Drawing.Point(20, 410);
             this._btnSecsMonitor.Size = new System.Drawing.Size(220, 40);
             this._btnSecsMonitor.Text = "SECS 監控";
+            this._btnSecsMonitor.Text = "SECS 監控";
             this._btnSecsMonitor.Click += new System.EventHandler(this.BtnSecsMonitor_Click);
+            // 
+            // _btnEtelTest
+            // 
+            this._btnEtelTest = new System.Windows.Forms.Button();
+            this._btnEtelTest.Location = new System.Drawing.Point(20, 480);
+            this._btnEtelTest.Size = new System.Drawing.Size(220, 40);
+            this._btnEtelTest.Text = "ETEL 驅動測試";
+            this._btnEtelTest.Click += new System.EventHandler(this.BtnEtelTest_Click);
+            this.actionSection.Controls.Add(this._btnEtelTest);
             // 
             // rightPanelTable
             // 
@@ -303,5 +313,6 @@ namespace WaferMeasurementFlow
         private System.Windows.Forms.Label _lblCarrierId;
         private System.Windows.Forms.DataGridView _slotMapGridView;
         private System.Windows.Forms.ListBox _logListBox;
+        private System.Windows.Forms.Button _btnEtelTest;
     }
 }

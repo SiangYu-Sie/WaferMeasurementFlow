@@ -77,6 +77,13 @@
       <HintPath>..\參考資料\ProductLicenseChecker.dll</HintPath>
     </Reference>
 
+
+    <Reference Include="dsa40net">
+      <HintPath>Libs\dsa40net.dll</HintPath>
+    </Reference>
+    <Reference Include="dmd40net">
+      <HintPath>Libs\dmd40net.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
