@@ -1,0 +1,28 @@
+# Build results
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.cache
+
+# NuGet
+packages/
+
+# IDE
+*.idea/
+.vscode/
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Exclude reference materials folder
+參考資料/
+
+# Log files
+*.log

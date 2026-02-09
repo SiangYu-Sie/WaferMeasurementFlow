@@ -1,0 +1,132 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Platforms>AnyCPU;x64</Platforms>
+    <LangVersion>latest</LangVersion>
+    <Prefer32Bit>false</Prefer32Bit>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.2" />
+    <Content Include="..\參考資料\HVM*.dll">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\參考資料\Qt5*.dll">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\參考資料\License.dat">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\參考資料\Config\**\*.*">
+      <Link>Config\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ActivateCode">
+      <HintPath>參考資料\ActivateCode.dll</HintPath>
+    </Reference>
+
+    <Reference Include="DIALink.HMI">
+      <HintPath>參考資料\DIALink.HMI.dll</HintPath>
+    </Reference>
+    <Reference Include="DIASECS">
+      <HintPath>..\參考資料\DIASECS.dll</HintPath>
+    </Reference>
+    <Reference Include="DIASECSGEM">
+      <HintPath>..\參考資料\DIASECSGEM.dll</HintPath>
+    </Reference>
+    <Reference Include="DIASECS_Configuration_Service">
+      <HintPath>參考資料\DIASECS_Configuration_Service.dll</HintPath>
+    </Reference>
+    <Reference Include="GEMDataModel">
+      <HintPath>..\參考資料\GEMDataModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Interop.Excel">
+      <HintPath>參考資料\Interop.Excel.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>參考資料\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI">
+      <HintPath>參考資料\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="SoftLicenseAPI">
+      <HintPath>參考資料\SoftLicenseAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="UniAuto.UniBCS.CommonPLC.API">
+      <HintPath>參考資料\UniAuto.UniBCS.CommonPLC.API.dll</HintPath>
+    </Reference>
+    <Reference Include="UniAuto.UniBCS.Core.Cryptography">
+      <HintPath>..\參考資料\UniAuto.UniBCS.Core.Cryptography.dll</HintPath>
+    </Reference>
+    <Reference Include="UniAuto.UniBCS.MISC.StateMachine">
+      <HintPath>..\參考資料\UniAuto.UniBCS.MISC.StateMachine.dll</HintPath>
+    </Reference>
+    <Reference Include="ProductLicenseChecker">
+      <HintPath>..\參考資料\ProductLicenseChecker.dll</HintPath>
+    </Reference>
+
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="參考資料\SecsGemInterface.cs" />
+  </ItemGroup>
+
+  <!-- 建置後事件：整理第三方 DLL 到 lib 資料夾 -->
+  <Target Name="OrganizeThirdPartyDlls" AfterTargets="Build">
+    <Message Text="========================================" Importance="high" />
+    <Message Text="開始整理第三方 DLL 到 lib 資料夾..." Importance="high" />
+    <Message Text="========================================" Importance="high" />
+    
+    <!-- 建立 lib 資料夾 -->
+    <MakeDir Directories="$(OutputPath)lib" />
+    
+    <!-- 定義要移動的第三方 DLL -->
+    <ItemGroup>
+      <ThirdPartyDlls Include="$(OutputPath)DIASECSGEM.dll" />
+      <ThirdPartyDlls Include="$(OutputPath)DIASECS.dll" />
+      <ThirdPartyDlls Include="$(OutputPath)GEMDataModel.dll" />
+      <ThirdPartyDlls Include="$(OutputPath)ProductLicenseChecker.dll" />
+      <ThirdPartyDlls Include="$(OutputPath)SoftLicenseAPI.dll" />
+      <ThirdPartyDlls Include="$(OutputPath)UniAuto.UniBCS.Core.Cryptography.dll" />
+      <ThirdPartyDlls Include="$(OutputPath)UniAuto.UniBCS.MISC.StateMachine.dll" />
+      <ThirdPartyDlls Include="$(OutputPath)DNGuard*.dll" />
+    </ItemGroup>
+    
+    <!-- 移動 DLL 到 lib 資料夾 -->
+    <Move SourceFiles="@(ThirdPartyDlls)"
+          DestinationFolder="$(OutputPath)lib"
+          OverwriteReadOnlyFiles="true"
+          Condition="Exists('%(ThirdPartyDlls.Identity)')">
+      <Output TaskParameter="DestinationFiles" ItemName="MovedDlls"/>
+    </Move>
+    
+    <!-- DNGuard Runtime DLL 需要在主目錄才能正常運作,複製回來 -->
+    <Copy SourceFiles="$(OutputPath)lib\DNGuard.Runtime.dll"
+          DestinationFolder="$(OutputPath)"
+          Condition="Exists('$(OutputPath)lib\DNGuard.Runtime.dll')"
+          SkipUnchangedFiles="true" />
+    
+    <Copy SourceFiles="$(OutputPath)lib\DNGuard.HVM.dll"
+          DestinationFolder="$(OutputPath)"
+          Condition="Exists('$(OutputPath)lib\DNGuard.HVM.dll')"
+          SkipUnchangedFiles="true" />
+    
+    <Message Text="已移動 @(ThirdPartyDlls->Count()) 個 DLL 檔案到 lib 資料夾" Importance="high" />
+    <Message Text="========================================" Importance="high" />
+    <Message Text="DLL 檔案整理完成!" Importance="high" />
+    <Message Text="========================================" Importance="high" />
+  </Target>
+
+</Project>

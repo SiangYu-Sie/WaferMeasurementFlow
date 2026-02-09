@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.2.11415.280
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaferMeasurementFlow", "WaferMeasurementFlow.csproj", "{4C944CDA-4860-02CD-5192-3BE78B644CE4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleFormDiaGemLib_Equipment", "..\DIASECSGEM300\SampleFormDiaGemLib_Equipment.csproj", "{162D4499-23E8-44B8-B9F2-468C4F17CF0B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4C944CDA-4860-02CD-5192-3BE78B644CE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C944CDA-4860-02CD-5192-3BE78B644CE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C944CDA-4860-02CD-5192-3BE78B644CE4}.Debug|x64.ActiveCfg = Debug|x64
+		{4C944CDA-4860-02CD-5192-3BE78B644CE4}.Debug|x64.Build.0 = Debug|x64
+		{4C944CDA-4860-02CD-5192-3BE78B644CE4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4C944CDA-4860-02CD-5192-3BE78B644CE4}.Debug|x86.Build.0 = Debug|Any CPU
+		{4C944CDA-4860-02CD-5192-3BE78B644CE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C944CDA-4860-02CD-5192-3BE78B644CE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C944CDA-4860-02CD-5192-3BE78B644CE4}.Release|x64.ActiveCfg = Release|x64
+		{4C944CDA-4860-02CD-5192-3BE78B644CE4}.Release|x64.Build.0 = Release|x64
+		{4C944CDA-4860-02CD-5192-3BE78B644CE4}.Release|x86.ActiveCfg = Release|Any CPU
+		{4C944CDA-4860-02CD-5192-3BE78B644CE4}.Release|x86.Build.0 = Release|Any CPU
+		{162D4499-23E8-44B8-B9F2-468C4F17CF0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{162D4499-23E8-44B8-B9F2-468C4F17CF0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{162D4499-23E8-44B8-B9F2-468C4F17CF0B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{162D4499-23E8-44B8-B9F2-468C4F17CF0B}.Debug|x64.Build.0 = Debug|Any CPU
+		{162D4499-23E8-44B8-B9F2-468C4F17CF0B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{162D4499-23E8-44B8-B9F2-468C4F17CF0B}.Debug|x86.Build.0 = Debug|Any CPU
+		{162D4499-23E8-44B8-B9F2-468C4F17CF0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{162D4499-23E8-44B8-B9F2-468C4F17CF0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{162D4499-23E8-44B8-B9F2-468C4F17CF0B}.Release|x64.ActiveCfg = Release|Any CPU
+		{162D4499-23E8-44B8-B9F2-468C4F17CF0B}.Release|x64.Build.0 = Release|Any CPU
+		{162D4499-23E8-44B8-B9F2-468C4F17CF0B}.Release|x86.ActiveCfg = Release|Any CPU
+		{162D4499-23E8-44B8-B9F2-468C4F17CF0B}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D24009D9-553C-4E20-A101-07BAB6A9D27B}
+	EndGlobalSection
+EndGlobal
