@@ -13,6 +13,13 @@ namespace WaferMeasurementFlow.Agents
         private readonly ProcessManager _processManager;
         private readonly WaferManager _waferManager;
 
+        // 追蹤所有 PJ 與 CJ
+        private readonly List<ProcessJob> _processJobs = new List<ProcessJob>();
+        private readonly List<ControlJob> _controlJobs = new List<ControlJob>();
+
+        public IReadOnlyList<ProcessJob> ProcessJobs => _processJobs;
+        public IReadOnlyList<ControlJob> ControlJobs => _controlJobs;
+
         public ControlJobAgent(RobotAgent robotAgent, Dictionary<int, LoadPortAgent> loadPorts, AlignerAgent alignerAgent, ProcessManager processManager, WaferManager waferManager)
         {
             _robotAgent = robotAgent;
@@ -35,6 +42,7 @@ namespace WaferMeasurementFlow.Agents
             // E40: Initial state is POOLED (Waiting for assignment to a CJ)
             // For simplicty in our enum, we might not have POOLED, treating QUEUED/IDLE as POOLED context.
             // Let's assume standard behavior: Created but not running.
+            _processJobs.Add(pj);
             SystemEventBus.PublishLog($"E40: ProcessJob '{pjId}' Created. State: POOLED. (Recipe: {recipeId}, Wafers: {substrates.Count})");
 
             return pj;
@@ -61,6 +69,7 @@ namespace WaferMeasurementFlow.Agents
             // 4. Initial State: QUEUED
             cj.State = ControlJobState.QUEUED;
 
+            _controlJobs.Add(cj);
             SystemEventBus.PublishLog($"E94: ControlJob '{cjId}' Created. State: QUEUED. (Contains {pjs.Count} PJs, Source: {sourceCarrier.Id})");
 
             return cj;

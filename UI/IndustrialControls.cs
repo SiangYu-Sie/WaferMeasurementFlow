@@ -64,11 +64,12 @@ namespace WaferMeasurementFlow.UI
         }
     }
 
-    // 自定義操作按鈕
+    // 自定義操作按鈕 (實心填滿風格)
     public class ActionButton : Control
     {
         private Color _accentColor;
         private bool _hovering = false;
+        private bool _pressed = false;
 
         public ActionButton(string text, Color accent)
         {
@@ -81,22 +82,49 @@ namespace WaferMeasurementFlow.UI
         }
 
         protected override void OnMouseEnter(EventArgs e) { _hovering = true; Invalidate(); base.OnMouseEnter(e); }
-        protected override void OnMouseLeave(EventArgs e) { _hovering = false; Invalidate(); base.OnMouseLeave(e); }
+        protected override void OnMouseLeave(EventArgs e) { _hovering = false; _pressed = false; Invalidate(); base.OnMouseLeave(e); }
+        protected override void OnMouseDown(MouseEventArgs e) { _pressed = true; Invalidate(); base.OnMouseDown(e); }
+        protected override void OnMouseUp(MouseEventArgs e) { _pressed = false; Invalidate(); base.OnMouseUp(e); }
 
         protected override void OnPaint(PaintEventArgs e)
         {
             var g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
-            Color bg = Enabled ? (_hovering ? Color.FromArgb(60, _accentColor) : Color.FromArgb(35, _accentColor)) : IndTheme.BgCard;
-            Color border = Enabled ? _accentColor : IndTheme.BorderColor;
-            Color fg = Enabled ? IndTheme.TextPrimary : IndTheme.TextMuted;
+            Color bg, fg;
 
+            if (!Enabled)
+            {
+                bg = Color.FromArgb(60, 60, 70);
+                fg = Color.FromArgb(120, 120, 130);
+            }
+            else if (_pressed)
+            {
+                // 按下時顏色變深
+                bg = ControlPaint.Dark(_accentColor, 0.15f);
+                fg = Color.White;
+            }
+            else if (_hovering)
+            {
+                // Hover 時顏色變亮
+                bg = ControlPaint.Light(_accentColor, 0.1f);
+                fg = Color.White;
+            }
+            else
+            {
+                // 正常狀態: 實心填滿 accent color
+                bg = _accentColor;
+                fg = Color.White;
+            }
+
+            // 繪製圓角背景
             using (var brush = new SolidBrush(bg))
-                g.FillRectangle(brush, 0, 0, Width, Height);
-            using (var pen = new Pen(border, 1.5f))
-                g.DrawRectangle(pen, 1, 1, Width - 3, Height - 3);
+            {
+                var rect = new Rectangle(0, 0, Width - 1, Height - 1);
+                g.FillRectangle(brush, rect);
+            }
 
+            // 繪製文字 (置中)
             var textSize = TextRenderer.MeasureText(Text, Font);
             TextRenderer.DrawText(g, Text, Font,
                 new Point((Width - textSize.Width) / 2, (Height - textSize.Height) / 2), fg);

@@ -31,6 +31,7 @@ namespace WaferMeasurementFlow
         private ActionButton _btnEtel;
 
         private DataGridView _gridSlots;
+        private DataGridView _gridJobs; // PJ/CJ 列表
         private RichTextBox _txtLog;
 
         public MainForm(Equipment equipment, IServiceProvider serviceProvider)
@@ -164,11 +165,12 @@ namespace WaferMeasurementFlow
             var rightLayout = new TableLayoutPanel
             {
                 Dock = DockStyle.Fill,
-                RowCount = 2,
+                RowCount = 3,
                 ColumnCount = 1
             };
-            rightLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 60F)); // Slot Map
-            rightLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 40F)); // Log
+            rightLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 40F)); // Slot Map
+            rightLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 25F)); // PJ/CJ List
+            rightLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 35F)); // Log
             rightPanel.Controls.Add(rightLayout);
 
             // 3. Slot Map Section
@@ -186,7 +188,25 @@ namespace WaferMeasurementFlow
 
             rightLayout.Controls.Add(secMap, 0, 0);
 
-            // 4. Log Section
+            // 4. PJ/CJ List Section
+            var secJobs = new SectionPanel { Title = "工單列表 (Job List)", Dock = DockStyle.Fill, Margin = new Padding(0, 0, 0, 10) };
+            var pnlJobs = new Panel { Dock = DockStyle.Fill, Padding = new Padding(15, 45, 15, 15), BackColor = Color.Transparent };
+            secJobs.Controls.Add(pnlJobs);
+
+            _gridJobs = new DataGridView();
+            SetupDataGridView(_gridJobs);
+            _gridJobs.Columns.Add("Type", "類型");
+            _gridJobs.Columns.Add("JobID", "工單 ID");
+            _gridJobs.Columns.Add("Recipe", "配方");
+            _gridJobs.Columns.Add("State", "狀態");
+            _gridJobs.Columns.Add("Wafers", "晶圓數");
+            _gridJobs.Columns[0].Width = 50;
+            _gridJobs.Columns[4].Width = 60;
+            pnlJobs.Controls.Add(_gridJobs);
+
+            rightLayout.Controls.Add(secJobs, 0, 1);
+
+            // 5. Log Section
             var secLog = new SectionPanel { Title = "系統日誌 (System Log)", Dock = DockStyle.Fill };
             var pnlLog = new Panel { Dock = DockStyle.Fill, Padding = new Padding(10, 40, 10, 10), BackColor = Color.Transparent };
             secLog.Controls.Add(pnlLog);
@@ -202,7 +222,7 @@ namespace WaferMeasurementFlow
             };
             pnlLog.Controls.Add(_txtLog);
 
-            rightLayout.Controls.Add(secLog, 0, 1);
+            rightLayout.Controls.Add(secLog, 0, 2);
         }
 
         private ActionButton CreateBtn(string text, Color color, EventHandler handler)
@@ -293,6 +313,7 @@ namespace WaferMeasurementFlow
                 _lblCarrierId.Text = "當前載具: 無";
 
             UpdateSlotMapDisplay();
+            UpdateJobsDisplay();
         }
 
         private void UpdateSlotMapDisplay()
@@ -312,6 +333,43 @@ namespace WaferMeasurementFlow
                     }
                 }
             }
+        }
+
+        private void UpdateJobsDisplay()
+        {
+            _gridJobs.Rows.Clear();
+
+            // Show Control Jobs
+            foreach (var cj in _equipment.ControlJobManager.ControlJobs)
+            {
+                string stateStr = GetControlJobStateString(cj.State);
+                int waferCount = cj.ProcessJobs.Sum(pj => pj.SubstratesToProcess.Count);
+                string recipeStr = string.Join(",", cj.ProcessJobs.Select(pj => pj.Recipe.Id).Distinct());
+                _gridJobs.Rows.Add("CJ", cj.Id, recipeStr, stateStr, waferCount);
+            }
+
+            // Show Process Jobs (that might not be in any CJ)
+            foreach (var pj in _equipment.ControlJobManager.ProcessJobs)
+            {
+                // Check if already shown via CJ
+                bool inCJ = _equipment.ControlJobManager.ControlJobs.Any(cj => cj.ProcessJobs.Contains(pj));
+                if (!inCJ)
+                {
+                    _gridJobs.Rows.Add("PJ", pj.Id, pj.Recipe.Id, "POOLED", pj.SubstratesToProcess.Count);
+                }
+            }
+        }
+
+        private string GetControlJobStateString(ControlJobState state)
+        {
+            return state switch
+            {
+                ControlJobState.QUEUED => "排隊中",
+                ControlJobState.EXECUTING => "執行中",
+                ControlJobState.COMPLETED => "已完成",
+                ControlJobState.PAUSED => "已暫停",
+                _ => state.ToString()
+            };
         }
 
         private int GetSelectedPortId()
