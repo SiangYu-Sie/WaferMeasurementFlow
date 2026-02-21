@@ -1,8 +1,9 @@
-using System;
+﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
 using WaferMeasurementFlow.Managers;
 using WaferMeasurementFlow.UI;
+using WaferMeasurementFlow.Core;
 
 namespace WaferMeasurementFlow.Forms
 {

@@ -1,7 +1,7 @@
 
-namespace WaferMeasurementFlow
+namespace WaferMeasurementFlow.Forms
 {
-    partial class MainForm
+    partial class PJCJCreationForm
     {
         private System.ComponentModel.IContainer components = null;
 
@@ -15,7 +15,7 @@ namespace WaferMeasurementFlow
         {
             this.components = new System.ComponentModel.Container();
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Text = "Wafer Measurement Flow";
+            this.Text = "Create Control Job";
         }
     }
 }

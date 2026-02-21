@@ -1,5 +1,5 @@
 
-namespace WaferMeasurementFlow
+namespace WaferMeasurementFlow.Forms
 {
     partial class RecipeEditorForm
     {

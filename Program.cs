@@ -2,6 +2,8 @@ using System;
 using System.Windows.Forms;
 using Microsoft.Extensions.DependencyInjection;
 using WaferMeasurementFlow.Agents;
+using WaferMeasurementFlow.Core;
+using WaferMeasurementFlow.Forms;
 
 namespace WaferMeasurementFlow
 {

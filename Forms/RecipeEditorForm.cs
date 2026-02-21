@@ -5,8 +5,9 @@ using System.Windows.Forms;
 using WaferMeasurementFlow.Managers;
 using WaferMeasurementFlow.Models;
 using WaferMeasurementFlow.UI;
+using WaferMeasurementFlow.Core;
 
-namespace WaferMeasurementFlow
+namespace WaferMeasurementFlow.Forms
 {
     public partial class RecipeEditorForm : Form
     {

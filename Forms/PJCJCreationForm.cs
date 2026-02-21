@@ -8,7 +8,9 @@ using WaferMeasurementFlow.Managers;
 using WaferMeasurementFlow.Models;
 using WaferMeasurementFlow.UI;
 
-namespace WaferMeasurementFlow
+using WaferMeasurementFlow.Core;
+
+namespace WaferMeasurementFlow.Forms
 {
     public partial class PJCJCreationForm : Form
     {
@@ -298,15 +300,20 @@ namespace WaferMeasurementFlow
             }
 
             // Execute
+            var waferIds = selectedWafers.Select(w => w.Id).ToList();
             var processJob = _equipment.ControlJobManager.CreateProcessJob(
                 _txtPJCJId.Text,
                 recipeId,
-                selectedWafers);
+                targetPort.Carrier.Id,
+                waferIds);
 
             var controlJob = _equipment.ControlJobManager.CreateControlJob(
                 _txtCJCJId.Text,
-                new List<ProcessJob> { processJob },
-                targetPort.Carrier!);
+                new List<string> { processJob.Id },
+                targetPort.Carrier.Id,
+                "",
+                Models.ProcessOrderMgmt.LIST,
+                selectedPortId);
 
             MessageBox.Show($"工單 '{controlJob.Id}' 已建立並排程。開始執行...", "訊息", MessageBoxButtons.OK, MessageBoxIcon.Information);
 

@@ -1,8 +1,9 @@
-using System;
+﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using WaferMeasurementFlow.Managers;
+using WaferMeasurementFlow.Core;
 
 namespace WaferMeasurementFlow.Forms
 {
@@ -37,6 +38,17 @@ namespace WaferMeasurementFlow.Forms
         private StatusIndicator indComm = null!;
         private StatusIndicator indControl = null!;
 
+        // HSMS 連線設定 UI
+        private ComboBox cmbConnectMode = null!;
+        private TextBox txtLocalIP = null!;
+        private TextBox txtLocalPort = null!;
+        private TextBox txtRemoteIP = null!;
+        private TextBox txtRemotePort = null!;
+        private TextBox txtDeviceId = null!;
+        private TextBox txtT3 = null!;
+        private TextBox txtT5 = null!;
+
+        private ActionButton btnInitialize = null!;
         private ActionButton btnStartDriver = null!;
         private ActionButton btnStopDriver = null!;
         private ActionButton btnEnableComm = null!;
@@ -44,6 +56,9 @@ namespace WaferMeasurementFlow.Forms
         private ActionButton btnOffline = null!;
         private ActionButton btnOnlineLocal = null!;
         private ActionButton btnOnlineRemote = null!;
+        private ActionButton btnDriverConfig = null!;
+        private ActionButton btnTabMonitor = null!;
+        private ActionButton btnTabConfig = null!;
 
         public SecsMonitorForm(SecsManager secsManager)
         {
@@ -61,19 +76,18 @@ namespace WaferMeasurementFlow.Forms
         private void InitializeComponent()
         {
             this.Text = "SECS/GEM Equipment Monitor";
-            this.Size = new Size(1100, 780);
+            this.Size = new Size(1200, 850);
             this.BackColor = BgPrimary;
             this.ForeColor = TextPrimary;
             this.Font = new Font("Segoe UI", 9.5F);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormBorderStyle = FormBorderStyle.Sizable;
-            this.MinimumSize = new Size(900, 650);
+            this.MinimumSize = new Size(1000, 750);
 
             BuildHeader();
             BuildContent();
 
             this.FormClosing += (s, e) => { if (e.CloseReason == CloseReason.UserClosing) { e.Cancel = true; this.Hide(); } };
-            RefreshStatus();
         }
 
         private void BuildHeader()
@@ -88,7 +102,7 @@ namespace WaferMeasurementFlow.Forms
 
             var titleLabel = new Label
             {
-                Text = "SECS/GEM Monitor",
+                Text = "SECS/GEM Monitor (DIASECSGEM300)",
                 Font = new Font("Segoe UI Semibold", 16F),
                 ForeColor = TextPrimary,
                 AutoSize = true,
@@ -97,15 +111,23 @@ namespace WaferMeasurementFlow.Forms
 
             var versionLabel = new Label
             {
-                Text = "v2.0",
+                Text = "v3.0",
                 Font = new Font("Segoe UI", 9F),
                 ForeColor = TextMuted,
                 AutoSize = true,
-                Location = new Point(210, 28)
+                Location = new Point(355, 28)
             };
 
             headerPanel.Controls.Add(titleLabel);
             headerPanel.Controls.Add(versionLabel);
+
+            // Tab Buttons in Header
+            btnTabMonitor = new ActionButton("監控操作", StatusBlue) { Width = 140, Height = 40, Location = new Point(500, 15) };
+            btnTabConfig = new ActionButton("連線設定", StatusGray) { Width = 140, Height = 40, Location = new Point(650, 15) };
+            
+            headerPanel.Controls.Add(btnTabMonitor);
+            headerPanel.Controls.Add(btnTabConfig);
+
             this.Controls.Add(headerPanel);
         }
 
@@ -130,23 +152,77 @@ namespace WaferMeasurementFlow.Forms
             mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 45F));
             contentPanel.Controls.Add(mainLayout);
 
-            // Left: Status + Controls
+            // Left Panel used to hold Tabs (now Buttons + Content)
             var leftPanel = new Panel { Dock = DockStyle.Fill, Padding = new Padding(0, 0, 10, 0) };
             mainLayout.Controls.Add(leftPanel, 0, 0);
 
-            var leftLayout = new TableLayoutPanel
+
+
+            var tabContentPanel = new Panel 
+            { 
+                Dock = DockStyle.Fill, 
+                BackColor = BgPrimary, 
+                Padding = new Padding(1),
+                AutoScroll = true
+            };
+            leftPanel.Controls.Add(tabContentPanel);
+            
+            // Define Layouts first so we can use them in button clicks
+            var monitorLayout = new TableLayoutPanel
             {
                 Dock = DockStyle.Fill,
                 RowCount = 3,
-                ColumnCount = 1
+                ColumnCount = 1,
+                Padding = new Padding(5, 30, 5, 5), // Added Top Padding
+                Visible = true
             };
-            leftLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 260F)); // Status
-            leftLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 220F)); // Controls
-            leftLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); // Log
-            leftPanel.Controls.Add(leftLayout);
+            var configLayout = new TableLayoutPanel 
+            { 
+                Dock = DockStyle.Fill, 
+                Padding = new Padding(20, 60, 20, 20), // Added Top Padding to avoid Header
+                ColumnCount = 1,
+                Visible = false
+            };
 
-            // Status Section
-            var statusSection = CreateSection("系統狀態總覽", 260);
+            // Tab Switch Logic - Buttons in Header
+            void SwitchTab(bool isMonitor)
+            {
+                monitorLayout.Visible = isMonitor;
+                configLayout.Visible = !isMonitor;
+                
+                // Visual Feedback
+                btnTabMonitor.BackColor = isMonitor ? StatusBlue : StatusGray;
+                btnTabConfig.BackColor = !isMonitor ? StatusBlue : StatusGray;
+            }
+            
+            btnTabMonitor.Click += (s, e) => SwitchTab(true);
+            btnTabConfig.Click += (s, e) => SwitchTab(false);
+
+            headerPanel.BringToFront(); // CRITICAL: Fix Z-Order so Header doesn't overlap Content
+
+            // Improve Button Layout - Move Left as requested
+            if (btnTabMonitor != null)
+            {
+                 btnTabMonitor.Location = new Point(470, 15); // Move closer to Title
+                 btnTabMonitor.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            }
+            if (btnTabConfig != null) 
+            {
+                btnTabConfig.Location = new Point(620, 15);
+                btnTabConfig.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            }
+
+            // === View 1: Monitor Layout ===
+            tabContentPanel.Controls.Add(monitorLayout);
+            monitorLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 200F)); // Status
+            monitorLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 180F)); // Control Panel
+            monitorLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));  // Detail Info
+
+            // === View 2: Config Layout ===
+            tabContentPanel.Controls.Add(configLayout);
+
+            // 1. Status Section (Add to monitorLayout)
+            var statusSection = CreateSection("系統狀態總覽", 190);
             var statusGrid = new TableLayoutPanel
             {
                 Dock = DockStyle.Fill,
@@ -169,10 +245,10 @@ namespace WaferMeasurementFlow.Forms
             statusGrid.Controls.Add(indComm, 0, 1);
             statusGrid.Controls.Add(indControl, 1, 1);
             statusSection.Controls.Add(statusGrid);
-            leftLayout.Controls.Add(statusSection, 0, 0);
+            monitorLayout.Controls.Add(statusSection, 0, 0);
 
-            // Controls Section
-            var ctrlSection = CreateSection("操作面板", 220);
+            // 2. Controls Section (Add to monitorLayout)
+            var ctrlSection = CreateSection("操作面板", 170);
             var ctrlFlow = new FlowLayoutPanel
             {
                 Dock = DockStyle.Fill,
@@ -183,13 +259,13 @@ namespace WaferMeasurementFlow.Forms
             };
 
             btnStartDriver = new ActionButton("啟動驅動", StatusBlue) { Margin = new Padding(5) };
-            btnStartDriver.Click += (s, e) => { _secsManager.StartDriver(); RefreshStatus(); };
+            btnStartDriver.Click += BtnStartDriver_Click;
             btnStopDriver = new ActionButton("停止驅動", StatusGray) { Margin = new Padding(5) };
-            btnStopDriver.Click += (s, e) => { _secsManager.StopDriver(); RefreshStatus(); };
+            btnStopDriver.Click += BtnStopDriver_Click;
             btnEnableComm = new ActionButton("啟用通訊", StatusGreen) { Margin = new Padding(5) };
-            btnEnableComm.Click += (s, e) => { _secsManager.EnableComm(); RefreshStatus(); };
+            btnEnableComm.Click += BtnEnableComm_Click;
             btnDisableComm = new ActionButton("禁用通訊", StatusRed) { Margin = new Padding(5) };
-            btnDisableComm.Click += (s, e) => { _secsManager.DisableComm(); RefreshStatus(); };
+            btnDisableComm.Click += BtnDisableComm_Click;
             btnOffline = new ActionButton("OFFLINE", StatusRed) { Margin = new Padding(5) };
             btnOffline.Click += (s, e) => { _secsManager.GoOffline(); RefreshStatus(); };
             btnOnlineLocal = new ActionButton("LOCAL", StatusYellow) { Margin = new Padding(5) };
@@ -199,26 +275,26 @@ namespace WaferMeasurementFlow.Forms
 
             ctrlFlow.Controls.AddRange(new Control[] { btnStartDriver, btnStopDriver, btnEnableComm, btnDisableComm, btnOffline, btnOnlineLocal, btnOnlineRemote });
             ctrlSection.Controls.Add(ctrlFlow);
-            leftLayout.Controls.Add(ctrlSection, 0, 1);
+            monitorLayout.Controls.Add(ctrlSection, 0, 1);
 
-            // Detail Info Section (Left Bottom)
+            // 3. Instruction Detail Section (Add to monitorLayout)
             var detailSection = CreateSection("操作說明", 0);
             var detailContent = new Panel { Dock = DockStyle.Fill, Padding = new Padding(12, 45, 12, 12), BackColor = Color.Transparent };
             var detailText = new RichTextBox
             {
-                Text = "【狀態說明】\n" +
-                       "• 初始化：DIASECSGEM 控制器初始化結果\n" +
-                       "• 驅動連線：TCP/IP 通訊層連線狀態\n" +
-                       "• 通訊狀態：S1F13 通訊握手\n" +
-                       "• 控制模式：設備控制狀態模型\n\n" +
-                       "【控制模式】\n" +
-                       "• OFFLINE：設備離線，不接受 Host 指令\n" +
-                       "• LOCAL：本地控制模式\n" +
-                       "• REMOTE：遠端控制模式，Host 完全控制\n\n" +
-                       "【操作流程】\n" +
-                       "1. 啟動驅動 → 建立 TCP 連線\n" +
-                       "2. 啟用通訊 → 發送 S1F13 握手\n" +
-                       "3. 切換控制模式 → 進入 Online",
+                Text = "【操作流程 - 參考 DIASECSGEM300】\n" +
+                       "1. 設定 HSMS 連線參數 (IP/Port/Mode)\n" +
+                       "2. 按「初始化」→ 執行 Initialize()\n" +
+                       "3. 按「啟動驅動」→ 執行 DriverStart()\n" +
+                       "4. 等待 InitialCompleted 事件觸發\n" +
+                       "   → 自動執行 EnableComm + OnlineRemote\n\n" +
+                       "【手動操作】\n" +
+                       "• 啟用通訊：發送 S1F13 通訊握手\n" +
+                       "• 禁用通訊：中斷 GEM 通訊層\n" +
+                       "• OFFLINE / LOCAL / REMOTE：控制狀態切換\n\n" +
+                       "【連線模式】\n" +
+                       "• Passive：設備等待 Host 連入 (預設)\n" +
+                       "• Active：設備主動連接 Host",
                 Font = new Font("Segoe UI", 9.5F),
                 ForeColor = TextSecondary,
                 BackColor = BgCard,
@@ -229,7 +305,93 @@ namespace WaferMeasurementFlow.Forms
             };
             detailContent.Controls.Add(detailText);
             detailSection.Controls.Add(detailContent);
-            leftLayout.Controls.Add(detailSection, 0, 2);
+            monitorLayout.Controls.Add(detailSection, 0, 2);
+
+            // === View 2: Config Layout Content ===
+            // (configLayout created above, now adding children)
+
+
+            var configSection = CreateSection("HSMS 連線設定", 350);
+            var configPanel = new Panel { Dock = DockStyle.Fill, Padding = new Padding(20, 50, 20, 20), BackColor = Color.Transparent };
+            configSection.Controls.Add(configPanel);
+
+            // Revised coordinates with EXTRA large spacing
+            int labelX = 20, valueX = 140, row2LabelX = 320, row2ValueX = 430;
+            int rowH = 45; 
+            int y = 60; // Push down to avoid Title overlap
+
+            // Row 1: Connect Mode + Device ID
+            configPanel.Controls.Add(CreateConfigLabel("連線模式:", labelX, y));
+            cmbConnectMode = new ComboBox
+            {
+                BackColor = BgCardHover, ForeColor = TextPrimary, FlatStyle = FlatStyle.Flat,
+                DropDownStyle = ComboBoxStyle.DropDownList, Width = 140, Font = new Font("Segoe UI", 10F),
+                Location = new Point(valueX, y - 2)
+            };
+            cmbConnectMode.Items.AddRange(new object[] { "Passive", "Active" });
+            cmbConnectMode.SelectedIndex = _secsManager.Config.ConnectMode == "Active" ? 1 : 0;
+            cmbConnectMode.SelectedIndexChanged += (s, e) => UpdateConfigUI();
+            configPanel.Controls.Add(cmbConnectMode);
+
+            configPanel.Controls.Add(CreateConfigLabel("Device ID:", row2LabelX, y));
+            txtDeviceId = CreateConfigTextBox(_secsManager.Config.DeviceId.ToString(), row2ValueX, y, 70);
+            configPanel.Controls.Add(txtDeviceId);
+
+            y += rowH;
+            // Row 2: Local IP + Port
+            configPanel.Controls.Add(CreateConfigLabel("Local IP:", labelX, y));
+            txtLocalIP = CreateConfigTextBox("127.0.0.1", valueX, y, 140);
+            configPanel.Controls.Add(txtLocalIP);
+
+            configPanel.Controls.Add(CreateConfigLabel("Local Port:", row2LabelX, y));
+            txtLocalPort = CreateConfigTextBox(_secsManager.Config.LocalPort.ToString(), row2ValueX, y, 70);
+            configPanel.Controls.Add(txtLocalPort);
+
+            y += rowH;
+            // Row 3: Remote IP + Port (Active mode)
+            configPanel.Controls.Add(CreateConfigLabel("Remote IP:", labelX, y));
+            txtRemoteIP = CreateConfigTextBox(_secsManager.Config.ValidIpAddress, valueX, y, 140);
+            configPanel.Controls.Add(txtRemoteIP);
+
+            configPanel.Controls.Add(CreateConfigLabel("Remote Port:", row2LabelX, y));
+            txtRemotePort = CreateConfigTextBox(_secsManager.Config.RemotePort.ToString(), row2ValueX, y, 70);
+            configPanel.Controls.Add(txtRemotePort);
+
+            y += rowH;
+            // Row 4: T3 + T5
+            configPanel.Controls.Add(CreateConfigLabel("T3 (sec):", labelX, y));
+            txtT3 = CreateConfigTextBox(_secsManager.Config.T3Timeout.ToString(), valueX, y, 70);
+            configPanel.Controls.Add(txtT3);
+
+            configPanel.Controls.Add(CreateConfigLabel("T5 (sec):", row2LabelX, y));
+            txtT5 = CreateConfigTextBox(_secsManager.Config.T5Timeout.ToString(), row2ValueX, y, 70);
+            configPanel.Controls.Add(txtT5);
+
+            y += rowH + 20;
+            // Row 5: Initialize + DriverConfig buttons
+            btnInitialize = new ActionButton("初始化", StatusBlue) { Width = 120, Height = 38, Margin = new Padding(0) };
+            btnInitialize.Location = new Point(valueX, y); // Align with input boxes
+            btnInitialize.Click += BtnInitialize_Click;
+            configPanel.Controls.Add(btnInitialize);
+
+            btnDriverConfig = new ActionButton("檢視設定", StatusGray) { Width = 120, Height = 38, Margin = new Padding(0) };
+            btnDriverConfig.Location = new Point(row2LabelX, y); // Align with second column labels
+            btnDriverConfig.Click += (s, e) =>
+            {
+                var cfg = _secsManager.Config;
+                var info = $"HSMS Mode: {cfg.ConnectMode}\n" +
+                           $"Local: {txtLocalIP.Text}:{cfg.LocalPort}\n" +
+                           $"Remote: {cfg.ValidIpAddress}:{cfg.RemotePort}\n" +
+                           $"DeviceId: {cfg.DeviceId}\n" +
+                           $"T3={cfg.T3Timeout}, T5={cfg.T5Timeout}";
+                MessageBox.Show(info, "HSMS Driver 設定", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            };
+            configPanel.Controls.Add(btnDriverConfig);
+
+            configLayout.Controls.Add(configSection);
+            
+            // Ensure Config is updated after controls are created
+            UpdateConfigUI();
 
             // Right: Log Section
             var rightPanel = new Panel { Dock = DockStyle.Fill, Padding = new Padding(10, 0, 0, 0) };
@@ -251,6 +413,108 @@ namespace WaferMeasurementFlow.Forms
             logInner.Controls.Add(logBox);
             logSection.Controls.Add(logInner);
             rightPanel.Controls.Add(logSection);
+        }
+
+        private Label CreateConfigLabel(string text, int x, int y)
+        {
+            return new Label
+            {
+                Text = text,
+                AutoSize = true,
+                ForeColor = TextSecondary,
+                Font = new Font("Segoe UI", 9F),
+                Location = new Point(x, y + 3)
+            };
+        }
+
+        private TextBox CreateConfigTextBox(string text, int x, int y, int width)
+        {
+            return new TextBox
+            {
+                Text = text,
+                BackColor = BgCardHover,
+                ForeColor = TextPrimary,
+                BorderStyle = BorderStyle.FixedSingle,
+                Font = new Font("Segoe UI", 9F),
+                Width = width,
+                Location = new Point(x, y)
+            };
+        }
+
+        private void UpdateConfigUI()
+        {
+            bool isActive = cmbConnectMode.SelectedIndex == 1;
+            txtRemoteIP.Enabled = isActive;
+            txtRemotePort.Enabled = isActive;
+        }
+
+        /// <summary>
+        /// 將 UI 上的設定值寫入 SecsManager.Config，參考 DIASECSGEM300 DriverConfigInfo
+        /// </summary>
+        private void ApplyConfigFromUI()
+        {
+            var cfg = _secsManager.Config;
+            cfg.ConnectMode = cmbConnectMode.SelectedIndex == 1 ? "Active" : "Passive";
+            cfg.ValidIpAddress = txtRemoteIP.Text.Trim();
+
+            if (int.TryParse(txtLocalPort.Text, out int lp)) cfg.LocalPort = lp;
+            if (int.TryParse(txtRemotePort.Text, out int rp)) cfg.RemotePort = rp;
+            if (int.TryParse(txtDeviceId.Text, out int did)) cfg.DeviceId = did;
+            if (int.TryParse(txtT3.Text, out int t3)) cfg.T3Timeout = t3;
+            if (int.TryParse(txtT5.Text, out int t5)) cfg.T5Timeout = t5;
+        }
+
+        // ===================================================================
+        // Button Handlers - 參考 DIASECSGEM300 MainForm 的連線流程
+        // ===================================================================
+
+        /// <summary>
+        /// 初始化：對應 DIASECSGEM300 的 InitialDIASecsGem()
+        /// 必須在 DriverStart 之前呼叫
+        /// </summary>
+        private void BtnInitialize_Click(object sender, EventArgs e)
+        {
+            ApplyConfigFromUI();
+            _secsManager.InitializeController();
+            RefreshStatus();
+        }
+
+        /// <summary>
+        /// 啟動驅動：對應 DIASECSGEM300 的 btnStart_Click
+        /// 僅執行 DriverStart，不自動 EnableComm/OnlineRemote
+        /// InitialCompleted 事件會自動觸發後續動作
+        /// </summary>
+        private void BtnStartDriver_Click(object sender, EventArgs e)
+        {
+            _secsManager.StartDriver();
+            RefreshStatus();
+        }
+
+        /// <summary>
+        /// 停止驅動：對應 DIASECSGEM300 的 btnStop_Click
+        /// </summary>
+        private void BtnStopDriver_Click(object sender, EventArgs e)
+        {
+            _secsManager.StopDriver();
+            RefreshStatus();
+        }
+
+        /// <summary>
+        /// 啟用通訊：對應 DIASECSGEM300 的 btnEnableComm_Click
+        /// </summary>
+        private void BtnEnableComm_Click(object sender, EventArgs e)
+        {
+            _secsManager.EnableComm();
+            RefreshStatus();
+        }
+
+        /// <summary>
+        /// 禁用通訊：對應 DIASECSGEM300 的 btnDisableComm_Click
+        /// </summary>
+        private void BtnDisableComm_Click(object sender, EventArgs e)
+        {
+            _secsManager.DisableComm();
+            RefreshStatus();
         }
 
         private Panel CreateSection(string title, int height)
@@ -279,9 +543,12 @@ namespace WaferMeasurementFlow.Forms
             if (_secsManager == null || this.IsDisposed) return;
             if (this.InvokeRequired) { this.BeginInvoke(new Action(RefreshStatus)); return; }
 
+            // Guard: UI controls may not be fully initialized yet
+            if (btnInitialize == null) return;
+
             // Init
             int initRes = _secsManager.LastInitResult;
-            indInit.SetStatus(initRes == 0 ? "成功" : (initRes == -1 ? "等待中" : "失敗"),
+            indInit.SetStatus(initRes == 0 ? "成功" : (initRes == -1 ? "等待中" : $"失敗({initRes})"),
                               initRes == 0 ? StatusGreen : (initRes == -1 ? StatusGray : StatusRed));
 
             // Driver
@@ -299,21 +566,47 @@ namespace WaferMeasurementFlow.Forms
             string ctlText = ctl == SecsControlMode.OnlineRemote ? "遠端控制" : (ctl == SecsControlMode.OnlineLocal ? "本地控制" : "離線");
             indControl.SetStatus(ctlText, ctl == SecsControlMode.OnlineRemote ? StatusGreen : (ctl == SecsControlMode.OnlineLocal ? StatusYellow : StatusRed));
 
-            // Buttons
-            btnStartDriver.Enabled = drv == SecsDriverState.Disconnected;
-            btnStopDriver.Enabled = drv != SecsDriverState.Disconnected;
-            btnEnableComm.Enabled = comm != SecsCommState.Communicating && drv == SecsDriverState.Connected;
+            // Buttons state management following DIASECSGEM300 flow
+            bool isInitialized = initRes == 0;
+            bool isDisconnected = drv == SecsDriverState.Disconnected;
+
+            // Initialize 按鈕：只有在未初始化或 Driver 停止時才能按
+            btnInitialize.Enabled = !isInitialized || isDisconnected;
+
+            // 連線設定：只有在 Driver 未啟動時才能改
+            bool canEditConfig = isDisconnected;
+            cmbConnectMode.Enabled = canEditConfig;
+            txtLocalIP.Enabled = canEditConfig;
+            txtLocalPort.Enabled = canEditConfig;
+            txtDeviceId.Enabled = canEditConfig;
+            txtT3.Enabled = canEditConfig;
+            txtT5.Enabled = canEditConfig;
+            if (canEditConfig) UpdateConfigUI(); // 只在可編輯時更新 Active/Passive 邏輯
+
+            // DriverStart/Stop：參考 DIASECSGEM300 switch(SECSDriverStatus)
+            // Disconnection → btnStart=true, btnStop=false
+            // Listening/Connecting → btnStart=false, btnStop=true
+            // Connection → btnStart=false, btnStop=true
+            btnStartDriver.Enabled = isInitialized && isDisconnected;
+            btnStopDriver.Enabled = !isDisconnected;
+
+            // EnableComm/DisableComm：參考 DIASECSGEM300 switch(CommunicationState)
+            // Disabled → EnableComm=true, DisableComm=false
+            // NotCommunicating → EnableComm=false, DisableComm=true
+            // Communicating → EnableComm=false, DisableComm=true
+            btnEnableComm.Enabled = comm == SecsCommState.Disabled && isInitialized;
             btnDisableComm.Enabled = comm != SecsCommState.Disabled;
 
+            // Control State buttons：需要通訊已建立
             bool canCtl = comm == SecsCommState.Communicating;
             btnOffline.Enabled = canCtl && ctl != SecsControlMode.EquipmentOffline;
             btnOnlineLocal.Enabled = canCtl && ctl != SecsControlMode.OnlineLocal;
             btnOnlineRemote.Enabled = canCtl && ctl != SecsControlMode.OnlineRemote;
         }
 
-        private void OnLogReceived(object? sender, string log)
+        private void OnLogReceived(object sender, string log)
         {
-            if (this.InvokeRequired) { this.BeginInvoke(new Action<object?, string>(OnLogReceived), sender, log); return; }
+            if (this.InvokeRequired) { this.BeginInvoke(new Action<object, string>(OnLogReceived), sender, log); return; }
             if (logBox.TextLength > 80000) logBox.Clear();
             logBox.AppendText($"[{DateTime.Now:HH:mm:ss}] {log}{Environment.NewLine}");
             logBox.ScrollToCaret();

@@ -9,8 +9,9 @@ using WaferMeasurementFlow.Helpers;
 using WaferMeasurementFlow.Agents;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using WaferMeasurementFlow.Core;
 
-namespace WaferMeasurementFlow
+namespace WaferMeasurementFlow.Forms
 {
     public partial class MainForm : Form
     {
@@ -38,6 +39,16 @@ namespace WaferMeasurementFlow
         {
             InitializeComponent();
             _equipment = equipment;
+
+            _equipment.SecsManager.ShowMonitorRequested += (s, e) =>
+            {
+                if (this.InvokeRequired)
+                {
+                    this.Invoke(new MethodInvoker(() => ShowSecsMonitor()));
+                    return;
+                }
+                ShowSecsMonitor();
+            };
             _serviceProvider = serviceProvider;
 
             BuildUI();
@@ -148,7 +159,7 @@ namespace WaferMeasurementFlow
             _btnRecipes = CreateBtn("配方管理", IndTheme.StatusBlue, BtnManageRecipes_Click);
             flowOps.Controls.Add(_btnRecipes);
 
-            _btnSecs = CreateBtn("SECS 監控", IndTheme.StatusBlue, BtnSecsMonitor_Click);
+            _btnSecs = CreateBtn("SECS 監控", IndTheme.StatusBlue, btnSECS_Click);
             _btnSecs.Margin = new Padding(3, 20, 3, 3);
             flowOps.Controls.Add(_btnSecs);
 
@@ -473,9 +484,20 @@ namespace WaferMeasurementFlow
             }
         }
 
-        private void BtnSecsMonitor_Click(object sender, EventArgs e)
+        private void btnSECS_Click(object sender, EventArgs e)
         {
-            _equipment.SecsManager.ShowMonitor();
+            _equipment.SecsManager.RequestShowMonitor();
+        }
+
+        private Forms.SecsMonitorForm? _monitorForm;
+        private void ShowSecsMonitor()
+        {
+            if (_monitorForm == null || _monitorForm.IsDisposed)
+            {
+                _monitorForm = new Forms.SecsMonitorForm(_equipment.SecsManager);
+            }
+            _monitorForm.Show();
+            _monitorForm.BringToFront();
         }
 
         private void BtnEtelTest_Click(object sender, EventArgs e)

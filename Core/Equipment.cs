@@ -3,7 +3,7 @@ using WaferMeasurementFlow.Managers;
 using WaferMeasurementFlow.Services;
 using System.Collections.Generic;
 
-namespace WaferMeasurementFlow
+namespace WaferMeasurementFlow.Core
 {
     public class Equipment
     {
@@ -36,30 +36,30 @@ namespace WaferMeasurementFlow
                     }
                     catch (System.TypeInitializationException ex)
                     {
-                        string errorMsg = $"µLªkªì©l¤Æ SECS Manager: {ex.Message}";
+                        string errorMsg = $"ç„¡æ³•åˆå§‹åŒ– SECS Manager: {ex.Message}";
                         
                         if (ex.InnerException != null)
                         {
-                            errorMsg += $"\n¤º³¡²§±`: {ex.InnerException.Message}";
+                            errorMsg += $"\nå…§éƒ¨ç•°å¸¸: {ex.InnerException.Message}";
                             
-                            // ÀË¬d¬O§_¬° DNGuard ¬ÛÃö¿ù»~
+                            // æª¢æŸ¥æ˜¯å¦ç‚º DNGuard ç›¸é—œéŒ¯èª¤
                             if (ex.InnerException.Message.Contains("DNGuard"))
                             {
-                                errorMsg += "\n\n¸Ñ¨M¤èªk:";
-                                errorMsg += "\n1. ÀË¬dÀ³¥Îµ{¦¡¥Ø¿ı¬O§_¥]§t DNGuard Runtime ÀÉ®× (DNGuard.Runtime.dll, DNGuard.HVM.dll)";
-                                errorMsg += "\n2. ½T»{ÀÉ®×¥¼³Q¨¾¬r³nÅé«ÊÂê©Î¹jÂ÷";
-                                errorMsg += "\n3. ÁpÃ´ DIASECSGEM ¨ÑÀ³°ÓÀò¨ú§¹¾ã¦w¸Ë®M¥ó";
-                                errorMsg += "\n4. ÀË¬dÀÉ®×¬O§_¨ã¦³°õ¦æÅv­­ (¥kÁä > ¤º®e > ¸Ñ°£«ÊÂê)";
+                                errorMsg += "\n\nè§£æ±ºæ–¹æ³•:";
+                                errorMsg += "\n1. æª¢æŸ¥æ‡‰ç”¨ç¨‹å¼ç›®éŒ„æ˜¯å¦åŒ…å« DNGuard Runtime æª”æ¡ˆ (DNGuard.Runtime.dll, DNGuard.HVM.dll)";
+                                errorMsg += "\n2. ç¢ºèªæª”æ¡ˆæœªè¢«é˜²æ¯’è»Ÿé«”å°é–æˆ–éš”é›¢";
+                                errorMsg += "\n3. è¯ç¹« DIASECSGEM ä¾›æ‡‰å•†ç²å–å®Œæ•´å®‰è£å¥—ä»¶";
+                                errorMsg += "\n4. æª¢æŸ¥æª”æ¡ˆæ˜¯å¦å…·æœ‰åŸ·è¡Œæ¬Šé™ (å³éµ > å…§å®¹ > è§£é™¤å°é–)";
                                 
-                                // ¦C¥XÀ³¥Îµ{¦¡¥Ø¿ı¸ê°T
+                                // åˆ—å‡ºæ‡‰ç”¨ç¨‹å¼ç›®éŒ„è³‡è¨Š
                                 var appPath = System.AppDomain.CurrentDomain.BaseDirectory;
-                                errorMsg += $"\n\nÀ³¥Îµ{¦¡¥Ø¿ı: {appPath}";
-                                errorMsg += "\n¯Ê¤Ö¥²­nªº DNGuard Runtime ÀÉ®×";
+                                errorMsg += $"\n\næ‡‰ç”¨ç¨‹å¼ç›®éŒ„: {appPath}";
+                                errorMsg += "\nç¼ºå°‘å¿…è¦çš„ DNGuard Runtime æª”æ¡ˆ";
                                 
                                 try
                                 {
                                     var dllFiles = System.IO.Directory.GetFiles(appPath, "*.dll");
-                                    errorMsg += $"\n¥Ø«e¥Ø¿ı¤¤ªº DLL ¼Æ¶q: {dllFiles.Length}";
+                                    errorMsg += $"\nç›®å‰ç›®éŒ„ä¸­çš„ DLL æ•¸é‡: {dllFiles.Length}";
                                 }
                                 catch { }
                             }
@@ -92,7 +92,7 @@ namespace WaferMeasurementFlow
             E87Manager = new E87Manager();
             WaferManager = new WaferManager();
             RecipeManager = new RecipeManager(); // Initialize RecipeManager
-            // SecsManager §ï¬°©µ¿ğªì©l¤Æ,¦b­º¦¸¦s¨ú®É¤~«Ø¥ß
+            // SecsManager æ”¹ç‚ºå»¶é²åˆå§‹åŒ–,åœ¨é¦–æ¬¡å­˜å–æ™‚æ‰å»ºç«‹
 
             // Initialize Hardware Agents
             Robot = new RobotAgent();
@@ -105,7 +105,7 @@ namespace WaferMeasurementFlow
 
             // ControlJobAgent orchestrates the others
             // Note: ControlJobAgent needs update to handle multiple ports or look them up from Equipment
-            ControlJobManager = new ControlJobAgent(Robot, LoadPorts, Aligner, ProcessManager, WaferManager);
+            ControlJobManager = new ControlJobAgent(Robot, LoadPorts, Aligner, ProcessManager, WaferManager, RecipeManager);
         }
     }
 }

@@ -57,4 +57,25 @@ namespace WaferMeasurementFlow.Models
         COMPLETED,
         ERROR
     }
+
+    // SEMI E40: Process Job State
+    public enum ProcessJobState
+    {
+        POOLED,
+        SETTING_UP,
+        WAITING_FOR_START,
+        PROCESSING,
+        PROCESS_COMPLETE,
+        PAUSED,
+        ABORTING,
+        STOPPING
+    }
+
+    // SEMI E94: Process Order Management
+    public enum ProcessOrderMgmt : byte
+    {
+        LIST = 0,       // 按清單順序
+        ARRIVAL = 1,    // 按載具到達順序
+        OPTIMIZE = 2    // 設備自行優化
+    }
 }
